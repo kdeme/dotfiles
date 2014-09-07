@@ -1,4 +1,165 @@
-syntax on
-
 " Wrap gitcommit file types at the appropriate length
 filetype indent plugin on
+
+" ----------------------------------------------------------------------------
+" Text Formatting
+" ----------------------------------------------------------------------------
+
+syntax on
+set enc=utf-8
+set autoindent  " Automatic indent new lines
+set smartindent " Be smart about it
+
+" Tab settings
+let g:hardtab = 1
+function! ToggleTabSetting()
+    if g:hardtab == 1
+        let g:hardtab = 0
+        set et
+        set sw=4
+        set softtabstop=4
+        set nosmarttab
+        echo "Soft tab"
+    else
+        let g:hardtab = 1
+        set noet
+        set sw=8
+        set softtabstop=8
+        set nosmarttab
+        echo "Hard tab"
+    endif
+endfun
+
+" Set soft tab by default
+silent call ToggleTabSetting()
+
+" Clean white space helper
+function! CleanWhitespace()
+    :%s/ \+\t/\t/gce    " spaces before tabs
+    :%s/ \+$//ge        " spaces at EOL
+    :%s/\t\+$//ge       " tabs at EOL
+endfun
+
+" ----------------------------------------------------------------------------
+" Theme
+" ----------------------------------------------------------------------------
+
+" Solarized options
+"let g:solarized_visibility = "high"
+"let g:solarized_contrast = "high"
+"let g:solarized_termcolors=256
+"colorscheme solarized
+" Set 256 color terminal
+"set t_Co=256
+
+" Background toggle
+" Set solarized scheme after changing background
+let g:dark = 0
+function! ToggleBackgroundColor()
+    if g:dark == 1
+        let g:dark = 0
+        set background=light
+   else
+        let g:dark = 1
+        set background=dark
+    endif
+    let g:solarized_contrast = "high"
+    let g:solarized_termcolors=256
+    colorscheme solarized
+endfun
+
+" Set dark background by default
+silent call ToggleBackgroundColor()
+
+" ----------------------------------------------------------------------------
+" UI
+" ----------------------------------------------------------------------------
+
+set vb              " Set visualbell (no beeps)
+set number          " Number lines
+set colorcolumn=81  " Show indication of 80 columns text width
+
+" Search settings
+set incsearch
+set ignorecase
+":set nowrapscan
+
+" Search highlighting
+let &hlsearch=1
+
+" Display some extra lines when scrolling
+set scrolloff=2
+set sidescroll=1
+set sidescrolloff=10
+
+" Allow cursor to move to next/previous line when on the last/first character of
+" a line using the arrows keys
+set whichwrap+=<,>
+
+" Status bar
+set laststatus=2
+set statusline=%F%m%r%h%w\ [%{&ff}]\ [%Y]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+
+" Command-line completion, see :help wildmode
+set wildmode=longest,list
+
+" Highlight tabs
+set list
+set listchars=tab:>-,extends:#,precedes:#
+"set lcs+=trail:·
+
+" Toggle trailing space indication
+" See http://vim.wikia.com/wiki/Highlight_unwanted_spaces
+autocmd BufWinEnter * syn match ExtraWhitespace /\s\+$/ containedin=ALL
+let g:trailing = 0
+function! ToggleTrailingSpace()
+if g:trailing == 1
+    let g:trailing = 0
+    highlight ExtraWhitespace NONE
+else
+    let g:trailing = 1
+    highlight ExtraWhitespace ctermbg=red guibg=red
+endif
+endfun
+
+call ToggleTrailingSpace()  " set initially
+
+" Set 'bash' syntax as default for shell scripts, this fixes for example
+" the error highlighting of $(...). See :help ft-bash-syntax for more info.
+let g:is_bash=1
+
+" ----------------------------------------------------------------------------
+" Remapping
+" ----------------------------------------------------------------------------
+
+" Set custom leader
+let mapleader = ","
+
+" Shortcut to toggle between light and dark background
+map <F4> :call ToggleBackgroundColor()<CR>
+
+" Shortcut to toggle tab indication
+map <F5> :set list!<CR>
+
+" Shortcut to toggle trailing space indication
+map <F6> :call ToggleTrailingSpace()<CR>
+
+" Shortcut to toggle search highlight
+map <F7> :let &hlsearch=!&hlsearch<CR>
+
+" Shortcut to toggle tab setting (hard or soft tab)
+map <F8> :call ToggleTabSetting() <CR>
+imap <F8> <C-O>:call ToggleTabSetting() <CR>
+
+" Shortcut for next file
+map <F9> :next<CR>
+
+" Shortcut to clean white space
+map <F12> :call CleanWhitespace() <CR>
+
+" ----------------------------------------------------------------------------
+" Other
+" ----------------------------------------------------------------------------
+
+" Treat buffers from stdin (e.g.: echo foo | vim -) as scratch buffers.
+au StdinReadPost * :set buftype=nofile
