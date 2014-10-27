@@ -50,9 +50,9 @@ endfun
 "let g:solarized_visibility = "high"
 "let g:solarized_contrast = "high"
 "let g:solarized_termcolors=256
-"colorscheme solarized
+colorscheme solarized
 " Set 256 color terminal
-"set t_Co=256
+set t_Co=256
 
 " Background toggle
 " Set solarized scheme after changing background
